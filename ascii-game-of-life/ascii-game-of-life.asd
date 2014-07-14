@@ -1,10 +1,10 @@
 (in-package :asdf-user)
 
-(defsystem "html-markup-generator"
+(defsystem "ascii-game-of-life"
   :description "Reddit challenge"
   :version "1.0.0"
   :author "Florian Patzl"
   :licence "Public Domain"
-  :depends-on (:monkeylib-html :trivial-shell)
+  :depends-on (:split-sequence)
   :components ((:file "main")))
 	       

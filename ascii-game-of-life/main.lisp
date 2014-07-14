@@ -56,13 +56,13 @@
 					  (split-sequence #\Space infoline))
 	(format t "n is ~d, width is ~d, height is ~d~%" n width height)
 	(let ((field (loop for i from 0 below height collecting (read-line s))))
-	  (dotimes (round 2)
+	  (dotimes (round n)
 	    (loop for index from 0 below (* width height)
 	       for x = (mod index height)
 	       for y = (floor index height)
 	       for neighbour-count = (count +on+ (neighbours x y)
 					    :key #'(lambda (l)
-						     (get-cell field (rest l) (first l))))
+						     (get-cell field (first l) (rest l))))
 	       for cell-value = (get-cell field x y)
 	       do
 		  (setf (elt (elt field y) x) (new-value cell-value neighbour-count)))
@@ -72,8 +72,8 @@
   (if (equal +off+ current-value)
       (if (eql 3 neighbour-count)
 	  +on+ +off+)
-      (if (or (< 2 neighbour-count)
-	      (> 3 neighbour-count))
+      (if (or (< neighbour-count 2)
+	      (> neighbour-count 3))
 	  +off+ +on+)))
 
 
