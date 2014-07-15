@@ -138,3 +138,9 @@
 
 (define-test test-get-cell
   (assert-equal #\# (get-cell `("..#", "...") 2 0)))
+
+(defun play-sample ()
+  (play "/home/flo/code/misc/reddit-daily/ascii-game-of-life/sample.txt"))
+
+(defun play-challenge ()
+  (play "/home/flo/code/misc/reddit-daily/ascii-game-of-life/challenge.txt"))
