@@ -48,19 +48,24 @@
 	(let ((field (loop for i from 0 below height collecting (read-line s))))
 	  (print-field field)
 	  (dotimes (round n)
+	    
 	    (loop for index from 0 below (* width height)
 	       for x = (mod index height)
 	       for y = (floor index height)
 	       for neighbour-count = (count-living-neighbours field x y)
 	       for cell-value = (get-cell field x y)
-	       do
-		  (update-value field x y cell-value neighbour-count))
+	       collecting (get-update x y cell-value neighbour-count) into updates
+	       finally (apply-updates field updates))
 	    (print-field field)))))))
 
-(defun update-value (field x y cell-value neighbour-count)
+(defun get-update (x y cell-value neighbour-count)
   (let ((value (new-value cell-value neighbour-count)))
     (unless (eql value cell-value)
-      (set-value field x y value))))
+      (list x y value))))
+
+(defun apply-updates (field updates)
+  (loop for (x y val) in (remove-if #'null updates)
+       do (set-value field x y val)))
 
 (defun set-value (field x y value)
   (setf (elt (elt field y) x)  value))
