@@ -65,7 +65,6 @@
 
 (defun new-value (current-value neighbour-count)
   "Determines the new value of a cell based on the current value and the number of neighbours"
-;;  (assertor (eql current-value +on+)
   (if (equal +off+ current-value)
       (if (eql 3 neighbour-count)
 	  +on+ +off+)
@@ -89,8 +88,6 @@
 	     (assert-equal +off+ (new-value +on+ 4))
 	     (assert-equal +on+ (new-value +on+ 3))
 	     )
-
-
 
 (defun get-cell (field x y)
   (elt (elt field y) x))
