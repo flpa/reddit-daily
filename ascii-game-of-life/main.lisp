@@ -74,5 +74,23 @@
 	  +off+ +on+)))
 
 
+(define-test test-new-value
+	     ;;If a cell is 'off' but exactly 3 of its neighbours are on, that
+	     ;;cell will also turn on - like reproduction.
+	     (assert-equal +on+ (new-value +off+ 3))
+	     (assert-equal +off+ (new-value +off+ 2))
+	     (assert-equal +off+ (new-value +off+ 4))
+	     ;;If a cell is 'on' but less than two of its neighbours are on, it
+	     ;;will die out - like underpopulation.
+	     (assert-equal +off+ (new-value +on+ 1))
+	     (assert-equal +on+ (new-value +on+ 2))
+	     ;;If a cell is 'on' but more than three of its neighbours are on,
+	     ;;it will die out - like overcrowding.
+	     (assert-equal +off+ (new-value +on+ 4))
+	     (assert-equal +on+ (new-value +on+ 3))
+	     )
+
+
+
 (defun get-cell (field x y)
   (elt (elt field y) x))
