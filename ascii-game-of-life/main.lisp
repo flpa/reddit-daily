@@ -56,6 +56,7 @@
 					  (split-sequence #\Space infoline))
 	(format t "n is ~d, width is ~d, height is ~d~%" n width height)
 	(let ((field (loop for i from 0 below height collecting (read-line s))))
+	  (print-field field)
 	  (dotimes (round n)
 	    (loop for index from 0 below (* width height)
 	       for x = (mod index height)
@@ -66,7 +67,11 @@
 	       for cell-value = (get-cell field x y)
 	       do
 		  (setf (elt (elt field y) x) (new-value cell-value neighbour-count)))
-	    (format t "~{~a~%~}~%" field)))))))
+	    (print-field field)))))))
+
+(defun print-field (field)
+    (format t "~{~a~%~}~%" field))
+
 
 (defun new-value (current-value neighbour-count)
   (if (equal +off+ current-value)
