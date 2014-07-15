@@ -5,21 +5,10 @@
 
 (in-package :com.github.flpa.daily-reddit.ascii-game-of-life)
 
-(defun play (filename)
-  (with-open-file (s filename)
-    (let ((infoline (read-line s)))
-      (destructuring-bind (
-
-(parse-integer 			   
-
-;; not only cube			   
-(defparameter *n* 10)
-
 (defun coord+ (coord)
   (mod (1+ coord) *n*))
 (defun coord- (coord)
   (mod (1- coord) *n*))
-
 
 ; norvig from SO
 
@@ -39,6 +28,7 @@
 ;norvig out
 
 (defun neighbours (x y)
+  "Lists the 8 neighbours' coordinates of the point x/y as cons cells."
   (remove
    (cons x y)
    (cross-product #'cons
