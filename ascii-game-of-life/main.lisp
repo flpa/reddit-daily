@@ -54,10 +54,11 @@
 	       for neighbour-count = (count-living-neighbours field x y)
 	       for cell-value = (get-cell field x y)
 	       do
-		  (setf (elt (elt field y) x) (new-value cell-value neighbour-count)))
+		  (update-value field x y cell-value neighbour-count))
 	    (print-field field)))))))
 
-
+(defun update-value (field x y cell-value neighbour-count)
+  (setf (elt (elt field y) x) (new-value cell-value neighbour-count)))
 
 (defun count-living-neighbours (field x y)
   (count +on+ (neighbours x y (length (elt field 0)) (length field))
@@ -66,11 +67,15 @@
 
 (define-test test-count-living-neighbours
   (let* ((field `("...."
-		 ".#.."
-		 ".#.#"
-		 "#..."
-		 "...."
-		 "....")))
+		  ".#.."
+		  ".#.#"
+		  "#..."
+		  "...."
+		  "...."
+		  "...."
+		  "####"
+		  "...."
+		 )))
   ;;upper hash
   (assert-equal 1 (count-living-neighbours field 1 1))
   ;;middle hash
@@ -78,10 +83,11 @@
   ;;lower hash
   (assert-equal 2 (count-living-neighbours field 0 3))
   ;;lonely hash
-  (assert-equal 2 (count-living-neighbours field 3 2))
+  (assert-equal 1 (count-living-neighbours field 3 2))
   ;;lonely dot
   (assert-equal 0 (count-living-neighbours field 2 4))
-
+  ;;bottom dot
+  (assert-equal 3 (count-living-neighbours field 2 8))
   ))
 
 (setf *print-errors* t)
