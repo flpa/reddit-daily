@@ -51,13 +51,41 @@
 	    (loop for index from 0 below (* width height)
 	       for x = (mod index height)
 	       for y = (floor index height)
-	       for neighbour-count = (count +on+ (neighbours x y)
-					    :key #'(lambda (l)
-						     (get-cell field (first l) (rest l))))
+	       for neighbour-count = (count-living-neighbours field x y)
 	       for cell-value = (get-cell field x y)
 	       do
 		  (setf (elt (elt field y) x) (new-value cell-value neighbour-count)))
 	    (print-field field)))))))
+
+
+
+(defun count-living-neighbours (field x y)
+  (count +on+ (neighbours x y)
+	 :key #'(lambda (l)
+		  (get-cell field (first l) (rest l)))))
+
+(define-test test-count-living-neighbours
+  (let ((field `("...."
+		 ".#.."
+		 ".#.#"
+		 "#..."
+		 "...."
+		 "....")))
+  ;;upper hash
+  (assert-equal 1 (count-living-neighbours field 1 1))
+  ;;middle hash
+  (assert-equal 2 (count-living-neighbours field 1 2))
+  ;;lower hash
+  (assert-equal 2 (count-living-neighbours field 0 3))
+  ;;lonely hash
+  (assert-equal 2 (count-living-neighbours field 3 2))
+  ;;lonely dot
+  (assert-equal 0 (count-living-neighbours field 2 4))
+
+  ))
+
+(setf *print-errors* t)
+
 
 (defun print-field (field)
     (format t "~{~a~%~}~%" field))
