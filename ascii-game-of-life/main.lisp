@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage :com.github.flpa.daily-reddit.ascii-game-of-life
-  (:use :cl :split-sequence))
+  (:use :cl :split-sequence :lisp-unit))
 
 (in-package :com.github.flpa.daily-reddit.ascii-game-of-life)
 
@@ -64,6 +64,8 @@
 
 
 (defun new-value (current-value neighbour-count)
+  "Determines the new value of a cell based on the current value and the number of neighbours"
+;;  (assertor (eql current-value +on+)
   (if (equal +off+ current-value)
       (if (eql 3 neighbour-count)
 	  +on+ +off+)
