@@ -58,7 +58,12 @@
 	    (print-field field)))))))
 
 (defun update-value (field x y cell-value neighbour-count)
-  (setf (elt (elt field y) x) (new-value cell-value neighbour-count)))
+  (let ((value (new-value cell-value neighbour-count)))
+    (unless (eql value cell-value)
+      (set-value field x y value))))
+
+(defun set-value (field x y value)
+  (setf (elt (elt field y) x)  value))
 
 (defun count-living-neighbours (field x y)
   (count +on+ (neighbours x y (length (elt field 0)) (length field))
