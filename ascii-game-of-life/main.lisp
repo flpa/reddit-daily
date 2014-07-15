@@ -91,3 +91,6 @@
 
 (defun get-cell (field x y)
   (elt (elt field y) x))
+
+(define-test test-get-cell
+  (assert-equal #\# (get-cell `("..#", "...") 2 0)))
