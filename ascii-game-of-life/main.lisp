@@ -70,13 +70,19 @@
 (defun set-value (field x y value)
   (setf (elt (elt field y) x)  value))
 
+(defun field-width (field)
+  (length (elt field 0)))
+
+(defun field-height (field)
+  (length field))
+
 (defun count-living-neighbours (field x y)
-  (count +on+ (neighbours x y (length (elt field 0)) (length field))
+  (count +on+ (neighbours x y (field-width field) (field-height field))
 	 :key #'(lambda (l)
 		  (get-cell field (first l) (rest l)))))
 
 (define-test test-count-living-neighbours
-  (let* ((field `("...."
+  (Let* ((field `("...."
 		  ".#.."
 		  ".#.#"
 		  "#..."
@@ -144,3 +150,71 @@
 
 (defun play-challenge ()
   (play "/home/flo/code/misc/reddit-daily/ascii-game-of-life/challenge.txt"))
+
+
+
+;; animate test
+
+
+(defclass bb (glut:window)
+  ((cells :accessor cells-of :initarg :cells))
+  (:default-initargs
+   :title "Brian's Brain in CL"
+   :mode '(:double :rgb)))
+
+(defmethod glut:display-window :before ((w bb))
+  (gl:clear-color 0 0 0 0)
+  (gl:matrix-mode :projection)
+  (gl:load-identity)
+  (let ((cells (cells-of w)))
+   (gl:ortho 0 (field-height cells)  0 (field-width cells) -1 1)))
+
+
+(defun render-cell (x y cell)
+  (flet ((draw-cell (x y)
+           (gl:with-pushed-matrix
+               (gl:translate x y 0)
+             (gl:with-primitive :polygon
+               (gl:vertex 0.1 0.1 0)
+               (gl:vertex 0.9 0.1 0)
+               (gl:vertex 0.9 0.9 0)
+               (gl:vertex 0.1 0.9 0)))))
+    (case cell
+      (+on+ (gl:color 1 1 1)
+           (draw-cell x y))
+      (+off+ (gl:color 0.5 0.5 0.5)
+              (draw-cell x y)))))
+
+
+(defmethod glut:display ((w bb))
+  (gl:clear :color-buffer)
+  (let* ((cells (cells-of w))
+         (w (field-width cells))
+         (h (field-height cells)))
+    (loop for index from 0 below (* w h)
+       for x = (mod index h)
+       for y = (floor index h)
+	 do (render-cell x y (get-cell cells x y))))
+  (glut:swap-buffers))
+
+
+(defmethod glut:idle ((w bb))
+  ;;(format t "flo")
+  ;;(setf (cells-of w) (evolve (cells-of w)))
+  (glut:post-redisplay))
+  )
+
+
+(defun play-graphic (filename)
+  (with-open-file (s filename)
+    (let ((infoline (read-line s)))
+      (destructuring-bind (n width height) (mapcar #'parse-integer
+					  (split-sequence #\Space infoline))
+	(let ((field (loop for i from 0 below height collecting (read-line s))))
+	  (format t "letse go")
+	  (glut:display-window (make-instance 'bb
+					      :cells field
+					      :width 512
+					      :height 512)))))))
+
+
