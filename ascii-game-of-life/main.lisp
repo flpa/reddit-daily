@@ -198,7 +198,7 @@
 
 (defmethod glut:display ((w bb))
   (gl:clear :color-buffer)
-  (when (cells-of w)
+  (when (cells-of w);;defensive, why?
     (let* ((cells (cells-of w))
 	    (w (field-width cells))
 	    (h (field-height cells)))
@@ -209,10 +209,10 @@
      (glut:swap-buffers)))
 
 
-;; (defmethod glut:idle ((w bb))
-;;    ;;(format t "flo")
-;;    (setf (cells-of w) (evolve (cells-of w)))
-;;    (glut:post-redisplay))
+(defmethod glut:idle ((w bb))
+  ;;(format t "flo")
+  (evolve (cells-of w))
+  (glut:post-redisplay))
 
 
 (defun play-graphic (filename)
