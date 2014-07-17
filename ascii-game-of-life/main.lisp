@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage :com.github.flpa.daily-reddit.ascii-game-of-life
-  (:use :cl :split-sequence :lisp-unit))
+  (:use :cl :split-sequence :lisp-unit :cl-glut))
 
 (in-package :com.github.flpa.daily-reddit.ascii-game-of-life)
 
@@ -48,15 +48,19 @@
 	(let ((field (loop for i from 0 below height collecting (read-line s))))
 	  (print-field field)
 	  (dotimes (round n)
-	    
-	    (loop for index from 0 below (* width height)
-	       for x = (mod index height)
-	       for y = (floor index height)
-	       for neighbour-count = (count-living-neighbours field x y)
-	       for cell-value = (get-cell field x y)
-	       collecting (get-update x y cell-value neighbour-count) into updates
-	       finally (apply-updates field updates))
+	    (evolve field)
 	    (print-field field)))))))
+
+(defun evolve (field)
+  (when field
+    (let ((width (field-width field)) (height (field-height field)))
+      (loop for index from 0 below (* width height)
+	 for x = (mod index height)
+	 for y = (floor index height)
+	 for neighbour-count = (count-living-neighbours field x y)
+	 for cell-value = (get-cell field x y)
+	 collecting (get-update x y cell-value neighbour-count) into updates
+	 finally (apply-updates field updates)))))
 
 (defun get-update (x y cell-value neighbour-count)
   (let ((value (new-value cell-value neighbour-count)))
@@ -167,7 +171,7 @@
   (gl:matrix-mode :projection)
   (gl:load-identity)
   (let ((cells (cells-of w)))
-   (gl:ortho 0 (field-height cells)  0 (field-width cells) -1 1)))
+   (gl:ortho 0 (field-width cells)  0 (field-height cells) -1 1)))
 
 
 (defun render-cell (x y cell)
@@ -179,30 +183,36 @@
                (gl:vertex 0.9 0.1 0)
                (gl:vertex 0.9 0.9 0)
                (gl:vertex 0.1 0.9 0)))))
-    (case cell
-      (+on+ (gl:color 1 1 1)
-           (draw-cell x y))
-      (+off+ (gl:color 0.5 0.5 0.5)
-              (draw-cell x y)))))
-
+    ;; (case cell
+    ;;   (+on+ (gl:color 1 1 1)
+    ;;        (draw-cell x y))
+    ;;   (+off+ (gl:color 0.5 0.5 0.5)
+    ;;           (draw-cell x y)))))
+    (if (eql +on+ cell)
+	(progn 
+	  (gl:color 1 1 1)
+	  (draw-cell x y))
+	(progn
+	  (gl:color 0.5 0.5 0.5)
+	  (draw-cell x y)))))
 
 (defmethod glut:display ((w bb))
   (gl:clear :color-buffer)
-  (let* ((cells (cells-of w))
-         (w (field-width cells))
-         (h (field-height cells)))
-    (loop for index from 0 below (* w h)
-       for x = (mod index h)
-       for y = (floor index h)
-	 do (render-cell x y (get-cell cells x y))))
-  (glut:swap-buffers))
+  (when (cells-of w)
+    (let* ((cells (cells-of w))
+	    (w (field-width cells))
+	    (h (field-height cells)))
+       (loop for index from 0 below (* w h)
+	  for x = (mod index h)
+	  for y = (floor index h)
+	  do (render-cell x y (get-cell cells x y))))
+     (glut:swap-buffers)))
 
 
-(defmethod glut:idle ((w bb))
-  ;;(format t "flo")
-  ;;(setf (cells-of w) (evolve (cells-of w)))
-  (glut:post-redisplay))
-  )
+;; (defmethod glut:idle ((w bb))
+;;    ;;(format t "flo")
+;;    (setf (cells-of w) (evolve (cells-of w)))
+;;    (glut:post-redisplay))
 
 
 (defun play-graphic (filename)
@@ -211,10 +221,17 @@
       (destructuring-bind (n width height) (mapcar #'parse-integer
 					  (split-sequence #\Space infoline))
 	(let ((field (loop for i from 0 below height collecting (read-line s))))
-	  (format t "letse go")
 	  (glut:display-window (make-instance 'bb
 					      :cells field
-					      :width 512
-					      :height 512)))))))
+					      ;;:width 512
+					      ;;:height 512
+					      )))))))
+(defun play-graphic-challenge ()
+  (play-graphic "/home/flo/code/misc/reddit-daily/ascii-game-of-life/challenge.txt"))
+
+(defun play-graphic-sample ()
+  (play-graphic "/home/flo/code/misc/reddit-daily/ascii-game-of-life/sample.txt"))
+
+
 
 
