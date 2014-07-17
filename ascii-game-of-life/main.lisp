@@ -164,7 +164,8 @@
   ((cells :accessor cells-of :initarg :cells))
   (:default-initargs
    :title "Brian's Brain in CL"
-   :mode '(:double :rgb)))
+   :mode '(:double :rgb)
+   :tick-interval 200))
 
 (defmethod glut:display-window :before ((w bb))
   (gl:clear-color 0 0 0 0)
@@ -210,6 +211,12 @@
 
 
 (defmethod glut:idle ((w bb))
+  ;;(format t "flo")
+  ;; (evolve (cells-of w))
+  ;; (glut:post-redisplay)
+  )
+
+(defmethod glut:tick ((w bb))
   ;;(format t "flo")
   (evolve (cells-of w))
   (glut:post-redisplay))
