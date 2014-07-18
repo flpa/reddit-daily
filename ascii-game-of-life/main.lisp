@@ -1,7 +1,8 @@
 (in-package :cl-user)
 
 (defpackage :com.github.flpa.daily-reddit.ascii-game-of-life
-  (:use :cl :split-sequence :lisp-unit :cl-glut))
+  (:use :common-lisp :split-sequence :lisp-unit :cl-glut)
+  (:export :play-graphic-challenge))
 
 (in-package :com.github.flpa.daily-reddit.ascii-game-of-life)
 
