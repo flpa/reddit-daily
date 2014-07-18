@@ -2,7 +2,9 @@
 
 (defpackage :com.github.flpa.daily-reddit.ascii-game-of-life
   (:use :common-lisp :split-sequence :lisp-unit :cl-glut)
-  (:export :play-graphic-challenge))
+  (:export :play-graphic-challenge)
+  ;; interface.lisp stuff
+  (:shadow #:special #:close #:get))
 
 (in-package :com.github.flpa.daily-reddit.ascii-game-of-life)
 
