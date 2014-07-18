@@ -160,10 +160,7 @@
 (defun play-challenge ()
   (play "/home/flo/code/misc/reddit-daily/ascii-game-of-life/challenge.txt"))
 
-
-
-;; animate test
-
+; glut based animation
 
 (defclass bb (glut:window)
   ((cells :accessor cells-of :initarg :cells))
@@ -189,11 +186,6 @@
                (gl:vertex 0.9 0.1 0)
                (gl:vertex 0.9 0.9 0)
                (gl:vertex 0.1 0.9 0)))))
-    ;; (case cell
-    ;;   (+on+ (gl:color 1 1 1)
-    ;;        (draw-cell x y))
-    ;;   (+off+ (gl:color 0.5 0.5 0.5)
-    ;;           (draw-cell x y)))))
     (if (eql +on+ cell)
 	(progn 
 	  (gl:color 1 1 1)
@@ -214,18 +206,9 @@
 	  do (render-cell x y (get-cell cells x y))))
      (glut:swap-buffers)))
 
-
-(defmethod glut:idle ((w bb))
-  ;;(format t "flo")
-  ;; (evolve (cells-of w))
-  ;; (glut:post-redisplay)
-  )
-
 (defmethod glut:tick ((w bb))
-  ;;(format t "flo")
   (evolve (cells-of w))
   (glut:post-redisplay))
-
 
 (defun play-graphic (filename)
   (with-open-file (s filename)
