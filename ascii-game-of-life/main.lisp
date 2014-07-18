@@ -115,6 +115,7 @@
   (assert-equal 3 (count-living-neighbours field 2 8))
   ))
 
+
 (setf *print-errors* t)
 (setf *print-failures* t)
 
@@ -196,15 +197,14 @@
 
 (defmethod glut:display ((w bb))
   (gl:clear :color-buffer)
-  (when (cells-of w);;defensive, why?
-    (let* ((cells (cells-of w))
-	    (w (field-width cells))
-	    (h (field-height cells)))
-       (loop for index from 0 below (* w h)
-	  for x = (mod index h)
-	  for y = (floor index h)
-	  do (render-cell x y (get-cell cells x y))))
-     (glut:swap-buffers)))
+  (let* ((cells (cells-of w))
+	 (w (field-width cells))
+	 (h (field-height cells)))
+    (loop for index from 0 below (* w h)
+       for x = (mod index h)
+       for y = (floor index h)
+       do (render-cell x y (get-cell cells x y))))
+  (glut:swap-buffers))
 
 (defmethod glut:tick ((w bb))
   (evolve (cells-of w))
