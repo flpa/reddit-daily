@@ -44,15 +44,17 @@
 
 (defun play (filename)
   (with-open-file (s filename)
-    (let ((infoline (read-line s)))
-      (destructuring-bind (n width height) (mapcar #'parse-integer
-					  (split-sequence #\Space infoline))
-	(format t "n is ~d, width is ~d, height is ~d~%" n width height)
-	(let ((field (loop for i from 0 below height collecting (read-line s))))
-	  (print-field field)
-	  (dotimes (round n)
-	    (evolve field)
-	    (print-field field)))))))
+    (destructuring-bind (n width height) (read-game-params s)
+      (format t "n is ~d, width is ~d, height is ~d~%" n width height)
+      (let ((field (loop for i from 0 below height collecting (read-line s))))
+	(print-field field)
+	(dotimes (round n)
+	  (evolve field)
+	  (print-field field))))))
+
+(defun read-game-params (stream)
+  (mapcar #'parse-integer
+	  (split-sequence #\Space (read-line stream))))
 
 (defun evolve (field)
   (when field
@@ -227,15 +229,13 @@
 
 (defun play-graphic (filename)
   (with-open-file (s filename)
-    (let ((infoline (read-line s)))
-      (destructuring-bind (n width height) (mapcar #'parse-integer
-					  (split-sequence #\Space infoline))
-	(let ((field (loop for i from 0 below height collecting (read-line s))))
-	  (glut:display-window (make-instance 'bb
-					      :cells field
-					      ;;:width 512
-					      ;;:height 512
-					      )))))))
+    (glut:display-window
+     (make-instance 'bb
+		    :cells (loop
+			      for i from 0 below
+				(third (read-game-params s))
+			      collecting (read-line s))))))
+
 (defun play-graphic-challenge ()
   (play-graphic "/home/flo/code/misc/reddit-daily/ascii-game-of-life/challenge.txt"))
 
