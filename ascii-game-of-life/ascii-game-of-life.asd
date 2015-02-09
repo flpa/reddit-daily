@@ -3,7 +3,7 @@
 (defsystem "ascii-game-of-life"
   :description "Reddit challenge"
   :version "1.0.0"
-  :author "Florian Patzl"
+  :author "flpa"
   :licence "Public Domain"
   :depends-on (:split-sequence :lisp-unit :cl-glut)
   :components ((:file "main"))
