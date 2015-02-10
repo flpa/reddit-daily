@@ -11,6 +11,20 @@
 ;;      - no broken input
 ;;      - only single-character operators
 ;;      - only single-digit numbers (...)
+;;
+(defun main ()
+  (format t "~a~%" (disambiguate (read-operators) (read-term))))
+
+(defun read-operators ()
+  ;; now we have an alist symbol->right-associative-p
+  (labels ((parse-add-operator (operators line)
+             (acons (elt line 0) (eql #\r (elt line 2)) operators))
+           (recurse (i n operators)
+             (if (eql i n)
+               (reverse operators)
+               (recurse (1+ i) n (parse-add-operator operators (read-line)))
+               )))
+    (recurse 0 (parse-integer (read-line)) '())))
 
 (defun read-term ()
   "Read from standard-input, recursively resolving lists."
@@ -25,37 +39,6 @@
                             symbols))))))
     (recurse '())))
 
-
-(defun read-operators ()
-  ;; now we have an alist symbol->right-associative-p
-  (labels ((parse-add-operator (operators line)
-             (acons (elt line 0) (eql #\r (elt line 2)) operators))
-           (recurse (i n operators)
-             (if (eql i n)
-               (reverse operators)
-               (recurse (1+ i) n (parse-add-operator operators (read-line)))
-               )))
-    (recurse 0 (parse-integer (read-line)) '())))
-
-(defun main ()
-  (format t "~a~%" (disambiguate (read-operators) (read-term))))
-
-;;e.g. (wrap-at '(1 + 2 + 3) 3)  => (1 + (2 + 3))
-(defun wrap-at (term op-pos)
-  (append (subseq term 0 (1- op-pos))
-          (list (subseq term (1- op-pos) (+ op-pos 2)))
-          (subseq term (+ op-pos 2))))
-
-(defun pos-of-strongest-operator (operators term)
-  (operator-pos (car (remove-if #'(lambda (op)
-                                    (not (find op term))) 
-                                operators 
-                                :key #'first)) 
-                term))
-
-(defun operator-pos (op term)
-  (position (first op) term :from-end (rest op)))
-
 (defun disambiguate (operators term)
   (if (listp term)
     (if (> (length term) 3) ; assume there's an operator
@@ -67,3 +50,24 @@
                     symbol))
               term))
     (list term)))
+
+(defun pos-of-strongest-operator (operators term)
+  (operator-pos (car (remove-if #'(lambda (op)
+                                    (not (find op term))) 
+                                operators 
+                                :key #'first)) 
+                term))
+
+(defun operator-pos (op term)
+  (position (first op) term :from-end (rest op)))
+
+(defun wrap-at (term op-pos)
+  "e.g. (wrap-at '(1 + 2 + 3) 3)  => (1 + (2 + 3))"
+  (append (subseq term 0 (1- op-pos))
+          (list (subseq term (1- op-pos) (+ op-pos 2)))
+          (subseq term (+ op-pos 2))))
+
+
+
+
+
