@@ -1,31 +1,42 @@
 (in-package #:precedence-parsing)
 
-;; assume: only perfect input
-;; assume: only single-digit numbers (...)
+(loop for input in (uiop/filesystem:directory-files "~/code/misc/reddit-daily/196-precedence-parsing/res/" "*.in")
+      do (with-open-file (*standard-input* input)
+           (format t "Input ~a~%" (pathname-name input))
+           (main)))
 
-(defun read-term (symbols)
+;; Assumptions:
+;;      - no broken input
+;;      - only single-character operators
+;;      - only single-digit numbers (...)
+
+(defun read-term ()
   "Read from standard-input, recursively resolving lists."
-  (let ((in (read-char *standard-input* nil #\))))
-    (if (or (eql in #\)) (eql in #\Newline))
-      (reverse symbols)
-      (read-term (cons 
-                   (if (eql in #\()
-                     ;; read sub-list
-                     (read-term '())
-                     in) 
-                   symbols)))))
+  (labels ((recurse (symbols)
+             (let ((in (read-char *standard-input* nil #\))))
+               (if (or (eql in #\)) (eql in #\Newline))
+                 (reverse symbols)
+                 (recurse (cons 
+                            (if (eql in #\()
+                              (read-term) ; read sublist
+                              in) 
+                            symbols))))))
+    (recurse '())))
 
-(with-open-file (*standard-input* "~/code/misc/reddit-daily/196-precedence-parsing/res/5.in")
-  (main))
+
+(defun read-operators ()
+  ;; now we have an alist symbol->right-associative-p
+  (labels ((parse-add-operator (operators line)
+             (acons (elt line 0) (eql #\r (elt line 2)) operators))
+           (recurse (i n operators)
+             (if (eql i n)
+               (reverse operators)
+               (recurse (1+ i) n (parse-add-operator operators (read-line)))
+               )))
+    (recurse 0 (parse-integer (read-line)) '())))
 
 (defun main ()
-  (let ((operators nil))
-    (flet ((parse-operator (line)
-             (acons (elt line 0) (eql #\r (elt line 2)) operators)))
-      (dotimes (i (parse-integer (read-line)))
-        (setf operators (parse-operator (read-line))))
-      ;; now we have an alist symbol->right-associative-p
-      (format t "~a~%" (disambiguate (reverse operators) (read-term '()))))))
+  (format t "~a~%" (disambiguate (read-operators) (read-term))))
 
 ;;e.g. (wrap-at '(1 + 2 + 3) 3)  => (1 + (2 + 3))
 (defun wrap-at (term op-pos)
@@ -37,11 +48,11 @@
   (operator-pos (car (remove-if #'(lambda (op)
                                     (not (find op term))) 
                                 operators 
-                                :key #'car )) 
+                                :key #'first)) 
                 term))
 
 (defun operator-pos (op term)
-  (position (car op) term :from-end (cdr op)))
+  (position (first op) term :from-end (rest op)))
 
 (defun disambiguate (operators term)
   (if (listp term)
