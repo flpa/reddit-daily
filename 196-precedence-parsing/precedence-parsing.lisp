@@ -2,6 +2,12 @@
   (:use #:cl))
 (in-package #:precedence-parsing)
 
+;;; We're relying on some assumptions here:
+;;;      - no broken input
+;;;      - only single-character operators
+;;;      - only single-digit numbers (...)
+
+;; Function for running all sample inputs
 (defun letse-go () 
   ;; Adapt path to run main function with all sample inputs
   (loop for input in (uiop/filesystem:directory-files 
@@ -11,11 +17,7 @@
              (format t "Input ~a~%" (pathname-name input))
              (main))))
 
-;;; We're relying on some assumptions here:
-;;;      - no broken input
-;;;      - only single-character operators
-;;;      - only single-digit numbers (...)
-
+;; Main entry point
 (defun main ()
   (format t "~a~%" (disambiguate (read-operators) (read-term))))
 
