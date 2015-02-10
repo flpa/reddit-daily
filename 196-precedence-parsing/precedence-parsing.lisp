@@ -2,11 +2,14 @@
   (:use #:cl))
 (in-package #:precedence-parsing)
 
-;;; Adapt path to run main function with all sample inputs
-(loop for input in (uiop/filesystem:directory-files "~/code/misc/reddit-daily/196-precedence-parsing/res/" "*.in")
-      do (with-open-file (*standard-input* input)
-           (format t "Input ~a~%" (pathname-name input))
-           (main)))
+(defun letse-go () 
+  ;; Adapt path to run main function with all sample inputs
+  (loop for input in (uiop/filesystem:directory-files 
+                       "~/code/misc/reddit-daily/196-precedence-parsing/res/" 
+                       "*.in")
+        do (with-open-file (*standard-input* input)
+             (format t "Input ~a~%" (pathname-name input))
+             (main))))
 
 ;;; We're relying on some assumptions here:
 ;;;      - no broken input
@@ -29,8 +32,9 @@
     (recurse 0 (parse-integer (read-line)) '())))
 
 (defun read-term ()
-  "Reads a term, which is represented by a list of characters, recursively 
-   resolving sub-terms. Terms are terminated by closing paren, newline or EOF."
+  "Reads a term, which is represented by a list of characters and lists, 
+   recursively resolving sub-terms. Terms are terminated by a closing paren, 
+   newline or EOF."
   (labels ((recurse (symbols)
              (let ((in (read-char *standard-input* nil :eof)))
                (case in 
@@ -48,12 +52,13 @@
   (if (listp term) ; during recursion we'll eventually encounter single symbols
     (if (> (length term) 3) 
       ;; Terms with more than three symbols are considered ambiguous. 
-      (disambiguate operators (wrap-at term (pos-of-strongest-operator operators term)))
+      (disambiguate operators (wrap-at term 
+                                       (pos-of-strongest-op operators term)))
       ;; Disambiguate sub-terms
       (mapcar #'(lambda (subterm) (disambiguate operators subterm)) term))
     term))
 
-(defun pos-of-strongest-operator (operators term)
+(defun pos-of-strongest-op (operators term)
   "Returns the position of the strongest operator in a term, i.e. the operator
    with the highest precedence."
   (operator-pos (first (remove-if #'(lambda (op)
@@ -75,4 +80,3 @@
   (append (subseq term 0 (1- op-pos))
           (list (subseq term (1- op-pos) (+ op-pos 2)))
           (subseq term (+ op-pos 2))))
-
