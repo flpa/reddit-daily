@@ -68,8 +68,8 @@
                 term))
 
 (defun operator-pos (op term)
-  "Returns the position of the first or last occurence of opreator OP in TERM,
-   depending on on whether the operator is left- or right-associative."
+  "Returns the position of the first or last occurrence of operator OP in TERM,
+   depending on whether the operator is left- or right-associative."
   (position (first op) term :from-end (rest op)))
 
 (defun wrap-at (term op-pos)
