@@ -50,20 +50,16 @@
       ;; Terms with more than three symbols are considered ambiguous. 
       (disambiguate operators (wrap-at term (pos-of-strongest-operator operators term)))
       ;; Disambiguate sub-terms
-      (mapcar #'(lambda (subterm)
-                  (if (listp subterm)
-                    (disambiguate operators subterm)
-                    subterm))
-              term))
-    (list term)))
+      (mapcar #'(lambda (subterm) (disambiguate operators subterm)) term))
+    term))
 
 (defun pos-of-strongest-operator (operators term)
   "Returns the position of the strongest operator in a term, i.e. the operator
    with the highest precedence."
   (operator-pos (first (remove-if #'(lambda (op)
-                                    (not (find op term))) 
-                                operators 
-                                :key #'first)) 
+                                      (not (find op term))) 
+                                  operators 
+                                  :key #'first)) 
                 term))
 
 (defun operator-pos (op term)
