@@ -23,7 +23,7 @@
   (labels ((parse-add-operator (operators line)
              (acons (elt line 0) (eql #\r (elt line 2)) operators))
            (recurse (i n operators)
-             (if (eql i n)
+             (if (= i n)
                (reverse operators)
                (recurse (1+ i) n (parse-add-operator operators (read-line))))))
     (recurse 0 (parse-integer (read-line)) '())))
@@ -32,35 +32,35 @@
   "Reads a term, which is represented by a list of characters, recursively 
    resolving sub-terms. Terms are terminated by closing paren, newline or EOF."
   (labels ((recurse (symbols)
-             (let ((in (read-char *standard-input* nil #\))))
-               (if (or (eql in #\)) (eql in #\Newline))
-                 (reverse symbols)
-                 (recurse (cons 
-                            (if (eql in #\()
-                              (read-term) ; read sub-term
-                              in) 
-                            symbols))))))
+             (let ((in (read-char *standard-input* nil :eof)))
+               (case in 
+                 ((#\) #\Newline :eof) (reverse symbols))
+                 (t (recurse (cons 
+                               (if (eql in #\()
+                                 (read-term) ; read sub-term
+                                 in) 
+                               symbols)))))))
     (recurse '())))
 
 (defun disambiguate (operators term)
   "Resolves ambiguous parts of TERM by applying the operator precedence and 
    associativity defined in OPERATORS."
-  (if (listp term)
+  (if (listp term) ; during recursion we'll eventually encounter single symbols
     (if (> (length term) 3) 
       ;; Terms with more than three symbols are considered ambiguous. 
       (disambiguate operators (wrap-at term (pos-of-strongest-operator operators term)))
       ;; Disambiguate sub-terms
-      (mapcar #'(lambda (symbol)
-                  (if (listp symbol)
-                    (disambiguate operators symbol)
-                    symbol))
+      (mapcar #'(lambda (subterm)
+                  (if (listp subterm)
+                    (disambiguate operators subterm)
+                    subterm))
               term))
     (list term)))
 
 (defun pos-of-strongest-operator (operators term)
   "Returns the position of the strongest operator in a term, i.e. the operator
    with the highest precedence."
-  (operator-pos (car (remove-if #'(lambda (op)
+  (operator-pos (first (remove-if #'(lambda (op)
                                     (not (find op term))) 
                                 operators 
                                 :key #'first)) 
