@@ -1,10 +1,7 @@
-;;;; precedence-parsing.asd
-
 (asdf:defsystem #:precedence-parsing
   :serial t
-  :description "Describe precedence-parsing here"
+  :description ""
   :author "flpa"
   :license "Public Domain"
-  :components ((:file "package")
-               (:file "precedence-parsing")))
+  :components ((:file "precedence-parsing")))
 

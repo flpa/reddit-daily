@@ -1,3 +1,5 @@
+(defpackage #:precedence-parsing
+  (:use #:cl))
 (in-package #:precedence-parsing)
 
 (loop for input in (uiop/filesystem:directory-files "~/code/misc/reddit-daily/196-precedence-parsing/res/" "*.in")
