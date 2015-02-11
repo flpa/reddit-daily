@@ -1,0 +1,23 @@
+GET-YOUR-PRIORITIES-RIGHT> *queue*
+NIL
+GET-YOUR-PRIORITIES-RIGHT> (enqueue "reddit" 1 10)
+(#S(ITEM :VALUE "reddit" :PRIO-A 1 :PRIO-B 10))
+GET-YOUR-PRIORITIES-RIGHT> (length *queue*)
+1
+GET-YOUR-PRIORITIES-RIGHT> (enqueue "daily" 2 9)
+(#S(ITEM :VALUE "reddit" :PRIO-A 1 :PRIO-B 10)
+ #S(ITEM :VALUE "daily" :PRIO-A 2 :PRIO-B 9))
+GET-YOUR-PRIORITIES-RIGHT> (enqueue "programming" 1.5 8)
+(#S(ITEM :VALUE "reddit" :PRIO-A 1 :PRIO-B 10)
+ #S(ITEM :VALUE "daily" :PRIO-A 2 :PRIO-B 9)
+ #S(ITEM :VALUE "programming" :PRIO-A 1.5 :PRIO-B 8))
+GET-YOUR-PRIORITIES-RIGHT> (length *queue*)
+3
+GET-YOUR-PRIORITIES-RIGHT> (dequeue-a)
+#S(ITEM :VALUE "daily" :PRIO-A 2 :PRIO-B 9)
+GET-YOUR-PRIORITIES-RIGHT> (dequeue-b)
+#S(ITEM :VALUE "reddit" :PRIO-A 1 :PRIO-B 10)
+GET-YOUR-PRIORITIES-RIGHT> (clear)
+NIL
+GET-YOUR-PRIORITIES-RIGHT> *queue*
+NIL
