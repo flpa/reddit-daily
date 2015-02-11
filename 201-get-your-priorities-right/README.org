@@ -1,3 +1,11 @@
+* Introduction 
+  This is my simple solution to Reddit DailyProgrammer challenge 201: Get Your Priorities Straight!
+* The Challenge
+  The challenge is about creating a priority queue implementation with two priority values per item. When de-queueing items, it's possible to choose which priority value to base the decision on.
+* Challenge Link
+  https://www.reddit.com/r/dailyprogrammer/comments/2vkva4/20150211_challenge_201_intermediate_get_your/
+* Example Usage
+#+BEGIN_SRC 
 GET-YOUR-PRIORITIES-RIGHT> *queue*
 NIL
 GET-YOUR-PRIORITIES-RIGHT> (enqueue "reddit" 1 10)
@@ -21,3 +29,4 @@ GET-YOUR-PRIORITIES-RIGHT> (clear)
 NIL
 GET-YOUR-PRIORITIES-RIGHT> *queue*
 NIL
+#+END_SRC
