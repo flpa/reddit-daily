@@ -1,0 +1,2 @@
+This is the stub README.txt for the "metro-tile-meltdown" project.
+See CHALLENGE.md

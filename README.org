@@ -1,0 +1,2 @@
+* About this repository
+This repository contains my solution to challenges of the [[https://www.reddit.com/r/dailyprogrammer]DailyProgrammer subreddit]. Not all of them are complete, I will try to summarize the status in each sub-directory.
