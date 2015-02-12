@@ -48,17 +48,15 @@
   "Removes and returns the item with the highest priority value, determined by 
    the function KEY-FN, from the queue. If there are multiple entries with the 
    same value, the oldest entry is returned."
-  (when *queue* 
-    (let ((dequeued-item 
-            (reduce #'(lambda (a b) 
-                        ;; by only picking B if it's > A, the oldest entry wins
-                        ;; in case of equal values
-                        (if (> (funcall key-fn b)
-                               (funcall key-fn a)) 
-                          b a))
-                    *queue*)))
-      (setf *queue* (remove dequeued-item *queue* :count 1))
-      dequeued-item)))
+  (when *queue*
+    (flet ((pick-higher-older (a b)
+             "Picks the ITEM with higher value, prefering A on tie."
+             (if (> (funcall key-fn b) (funcall key-fn a)) 
+                 b a))
+           (remove-first (item)
+             (setf *queue* (remove item *queue* :count 1))   
+             item)) 
+      (remove-first (reduce #'pick-higher-older *queue*)))))
 
 (test dequeue-a-uses-prio
   (clear)
