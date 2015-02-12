@@ -48,12 +48,17 @@
   "Removes and returns the item with the highest priority value, determined by 
    the function KEY-FN, from the queue. If there are multiple entries with the 
    same value, the oldest entry is returned."
-  ;; REDUCE finds max priority, FIND (from start) finds the oldest one.
-  (let ((dequeued-item (find (reduce #'max *queue* :key key-fn) 
-                             *queue* 
-                             :key key-fn)))
-    (setf *queue* (remove dequeued-item *queue* :count 1))
-    dequeued-item))
+  (when *queue* 
+    (let ((dequeued-item 
+            (reduce #'(lambda (a b) 
+                        ;; by only picking B if it's > A, the oldest entry wins
+                        ;; in case of equal values
+                        (if (> (funcall key-fn b)
+                               (funcall key-fn a)) 
+                          b a))
+                    *queue*)))
+      (setf *queue* (remove dequeued-item *queue* :count 1))
+      dequeued-item)))
 
 (test dequeue-a-uses-prio
   (clear)
@@ -90,6 +95,10 @@
   (enqueue "daily" 1.5 0)
   (enqueue "programmer" 1.06 0)
   (is (equal "daily" (item-value (dequeue-a)))))
+
+(test dequeue-empty
+  (clear)
+  (is-false (dequeue-a)))
 
 (defun clear ()
   "Clears the two-priority queue."
