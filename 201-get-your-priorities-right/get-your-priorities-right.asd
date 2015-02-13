@@ -3,5 +3,7 @@
   :description "Describe get-your-priorities-right here"
   :author "flpa"
   :license "Public Domain"
-  :components ((:file "get-your-priorities-right")))
+  :depends-on (#:fiveam)
+  :components ((:file "get-your-priorities-right")
+  	       (:file "tests")))
 
